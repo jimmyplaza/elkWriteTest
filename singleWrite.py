@@ -1,30 +1,54 @@
 from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 import elasticsearch
 import datetime
 
+elk_host = "localhost"
+elk_port = "9200"
+elk_index = "jimmy_index"
+elk_type = "jimmy_type"
 
-def main():
-    #host = "localhost"
-    host = "104.198.87.194"
-    port = "9200"
-    elk_index = "jimmy_index"
-    elk_type = "jimmy_type"
 
-    es = Elasticsearch([{'host': host, 'port': port }])
-    writeCount = 3000
+def worker(es, writeCount):
+    global elk_index
+    global elk_type
+
+    bulkArray = []
 
     for i in range(writeCount):
         doc = {
+        "_index": elk_index,
+        "_type": elk_type,
+        "_source": {
             'author': 'jimmy',
             'number': i,
             'timestamp': datetime.datetime.now(),
+            }
         }
-        try:
-            res = es.index(index=elk_index, doc_type=elk_type, id=i, body=doc)
-            #print ("Save to ELK: %r" % res['created'])
-        except elasticsearch.ElasticsearchException as e:
-            print (e)
-            print ('Failed to save to ELK')
+        bulkArray.append(doc)
+
+    runElk(es, bulkArray)
+
+
+
+
+def runElk(es, bulkArray):
+    if len(bulkArray) >0:
+        helpers.bulk(es, bulkArray)
+
+
+
+def main():
+    global elk_index
+    global elk_type
+
+    es = Elasticsearch([{'host': elk_index, 'port': elk_type}])
+    writeCount = 300000
+
+    worker(es, writeCount)
+
+
+
 
 if __name__=="__main__":
     main()
