@@ -42,7 +42,7 @@ def main():
     global elk_index
     global elk_type
 
-    es = Elasticsearch([{'host': elk_index, 'port': elk_type}])
+    es = Elasticsearch([{'host': elk_index, 'port': elk_port}])
     writeCount = 300000
 
     worker(es, writeCount)
