@@ -6,6 +6,8 @@ import asyncio
 import elasticsearch
 import tqdm
 
+import sys
+
 elk_host = "104.198.87.194"
 elk_port = "9200"
 elk_index = "jimmy_index2"
@@ -58,6 +60,46 @@ async def runElk(es, bulkArray):
 
 def main():
     es = Elasticsearch([{'host': elk_host, 'port': elk_port }])
+
+
+    mapping = {
+        "mappings": {
+
+        elk_type: {\
+        "properties":{\
+            "_timestamp":{
+                "enabled":"true"
+            },
+            "author":{
+                "type":"text",
+            },
+            "number":{
+                "type": "int",
+            },
+            "timestamp": {
+                "type": "date"
+            }
+        }
+        }
+        }
+    }
+
+
+
+    try:
+        #es.indices.create(index=elk_index, doc_type=elk_type, ignore=400, body=mapping)
+        #es.index(index=elk_index, doc_type=elk_type, body=mapping)
+        es.indices.delete(index=elk_index, ignore=[400, 404])
+        es.indices.create(index=elk_index, ignore=400)
+        es.indices.put_mapping(index=elk_index, doc_type=elk_type, body=mapping)
+
+    except elasticsearch.ElasticsearchException as e:
+        print (e)
+        print ('Failed to save to ELK')
+
+
+    sys.exit(0)
+
     writeArray = [100000, 100000, 100000]
 
     loop = asyncio.get_event_loop()
