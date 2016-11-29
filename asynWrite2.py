@@ -10,8 +10,8 @@ import sys
 
 elk_host = "10.240.0.43"
 elk_port = "9200"
-elk_index = "jimmy_index3"
-elk_type = "jimmy_type3"
+elk_index = "jimmy_index2"
+elk_type = "jimmy_type2"
 
 
 
@@ -74,28 +74,16 @@ def main():
         elk_type: {
         "properties":{
             "author":{
-		"index": "no", 
-		"include_in_all": "false",
                 "type":"text",
-		"doc_values": "false",
             },
             "address":{
-		"index": "no",
-		"include_in_all": "false",
                 "type":"text",
-		"doc_values": "false",
             },
             "number":{
-		"index": "not_analyzed",
-		"include_in_all": "false",
                 "type": "integer",
-		"doc_values": "false",
             },
             "timestamp": {
-		"index": "not_analyzed",
-		"include_in_all": "false",
                 "type": "date",
-		"doc_values": "false",
             }
         }
         }
